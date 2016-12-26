@@ -7,7 +7,7 @@
     var lineStyle = {
         fill: 'black',
         stroke: 'black',
-        strokeWidth: 5,
+        strokeWidth: 4,
         selectable: false
     };
 
@@ -16,7 +16,7 @@
             left: left,
             top: top,
             strokeWidth: 5,
-            radius: 12,
+            radius: 20,
             fill: '#fff',
             stroke: '#666'
         } );

@@ -1,6 +1,0 @@
-{
-	"1" : {
-		fabricStuff,
-		lines : [2,3,4]
-	}
-}
