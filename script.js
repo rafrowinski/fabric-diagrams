@@ -31,6 +31,23 @@
         return circle;
     }
 
+    function createImage( id, imageUrl, x, y, lineToList, lineFromList ) {
+        var imagePromise = new $.Deferred()
+        fabric.Image.fromURL( imageUrl, function( oImg ) {
+            oImg.hasControls = false;
+            oImg.hasBorders = false;
+            oImg.lineToList = lineToList ? lineToList : [];
+            oImg.lineFromList = lineFromList ? lineFromList : [];
+            oImg.id = id;
+            imagePromise.resolve( oImg );
+        }, {
+            left: x,
+            top: y
+        } );
+
+        return imagePromise;
+    }
+
     function makeLine( coords ) {
         return new fabric.Line( coords, lineStyle );
     }
@@ -129,20 +146,43 @@
     var canvasHtml = $( '#c' )
         .get( 0 );
     var canvasSize = canvasHtml.height;
+    var promiseList = [];
 
-    objectMap[ 1 ] =
-        createCircle( 1, 200, 200, [ {
-            id: 2
-        }, {
-            id: 3
-        } ], [] );
-    objectMap[ 2 ] = createCircle( 2, 250, 400, [], [ 1 ] );
-    objectMap[ 3 ] = createCircle( 3, 400, 400, [], [ 1 ] );
+    // objectMap[ 1 ] =
+    //     createCircle( 1, 200, 200, [ {
+    //         id: 2
+    //     }, {
+    //         id: 3
+    //     } ], [] );
+    // objectMap[ 2 ] = createCircle( 2, 250, 400, [], [ 1 ] );
+    // objectMap[ 3 ] = createCircle( 3, 400, 400, [], [ 1 ] );
+    promiseList.push( createImage( 1, 'images/central_unit.png', 200, 200, [ {
+        id: 2
+    }, {
+        id: 3
+    } ], [] ) );
+    promiseList.push( createImage( 2, 'images/router.png', 250, 400, [], [ 1 ] ) );
+    promiseList.push( createImage( 3, 'images/thermostat.png', 400, 400, [ {
+        id: 4
+    } ], [ 1 ] ) );
+    promiseList.push( createImage( 4, 'images/radiator.png', 600, 600, [], [ 3 ] ) );
 
-    drawGrid( canvasSize, gridTileSize );
-    snapAllToGrid( objectMap, gridTileSize, canvas );
-    drawAllLines( objectMap, canvas );
-    drawObjectMap( objectMap, canvas );
+    $.when.apply( this, promiseList )
+        .then( function() {
+            for ( var index in arguments ) {
+                if ( arguments.hasOwnProperty( index ) ) {
+                    var image = arguments[ index ];
+                    objectMap[ image.id ] = image
+                }
+            }
+            drawGrid( canvasSize, gridTileSize );
+            snapAllToGrid( objectMap, gridTileSize, canvas );
+            drawAllLines( objectMap, canvas );
+            drawObjectMap( objectMap, canvas );
+        } );
+
+
+
 
 
     //listeners
